@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+  <springProperty scope="context" name="appName" source="spring.application.name" />
+
+  <root level="info">
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+  <logger name="be.wallonie.spwf.persee" level="debug">
+    <AppenderRef ref="CONSOLE"/>
+  </logger>
+  <logger name="org.springframework.transaction" level="debug">
+    <AppenderRef ref="CONSOLE"/>
+  </logger>
+  <logger name="org.hibernate.SQL" level="debug" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+  <logger name="org.hibernate.orm.jdbc.bind" level="trace" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+  <logger name="org.hibernate.engine" level="warn" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+  <logger name="org.hibernate.stat" level="debug" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+  <logger name="org.hibernate.SQL_SLOW" level="info" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+  <logger name="org.hibernate.cache" level="debug" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+</configuration>

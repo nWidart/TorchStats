@@ -1,0 +1,7 @@
+[2025.11.04-19.20.47:543][562]GameLog: Display: [Game] BagMgr@:InitBagData PageId = 100 SlotId = 1 ConfigBaseId = 3001 Num = 1
+[2025.11.04-19.20.47:544][562]GameLog: Display: [Game] BagMgr@:InitBagData PageId = 100 SlotId = 5 ConfigBaseId = 261010 Num = 1
+[2025.11.04-19.20.49:100][562]GameLog: Display: [Game] PageApplyBase@ _UpdateGameEnd: LastSceneName = World'/Game/Art/Maps/01SD/XZ_YuJinZhiXiBiNanSuo200/XZ_YuJinZhiXiBiNanSuo200.XZ_YuJinZhiXiBiNanSuo200' NextSceneName = World'/Game/Art/Maps/02SD/SomeOtherMap/SomeOtherMap.SomeOtherMap'
+[2025.11.04-19.21.10:200][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 100 SlotId = 1 ConfigBaseId = 3001 Num = 3
+[2025.11.04-19.21.10:201][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 100 SlotId = 5 ConfigBaseId = 261010 Num = 0
+[2025.11.04-19.21.15:123][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 100 SlotId = 9 ConfigBaseId = 5555 Num = 10
+[2025.11.04-19.21.30:999][  5]GameLog: Display: [Game] NextSceneName = World'/Game/Art/Maps/01SD/XZ_YuJinZhiXiBiNanSuo200/XZ_YuJinZhiXiBiNanSuo200.XZ_YuJinZhiXiBiNanSuo200'
