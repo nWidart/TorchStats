@@ -76,4 +76,12 @@ public class Map {
   public @Nullable Instant getEndedAt() {
     return endedAt;
   }
+
+  public Float revenue() {
+    return items.stream().map(Item::getPrice).reduce(0f, Float::sum);
+  }
+
+  public Instant getStartedAt() {
+    return startedAt;
+  }
 }

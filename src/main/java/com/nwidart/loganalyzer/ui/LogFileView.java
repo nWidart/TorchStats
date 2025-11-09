@@ -1,7 +1,7 @@
 package com.nwidart.loganalyzer.ui;
 
 import com.nwidart.loganalyzer.LogService;
-import com.nwidart.loganalyzer.model.LogEntry;
+import com.nwidart.loganalyzer.StatsService;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -18,7 +18,6 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
@@ -39,6 +38,7 @@ public class LogFileView extends Main {
   private static final int MAX_DISPLAYED_LINES = 1000; // Limit UI lines for performance
 
   private final LogService logService;
+  private final StatsService statsService;
   private final LinkedBlockingDeque<Span> logLines = new LinkedBlockingDeque<>(MAX_DISPLAYED_LINES);
 
   private final TextField logFileField;
@@ -53,6 +53,7 @@ public class LogFileView extends Main {
   private final Span sessionDuration = new Span("-");
   private final Span revenuePerSession = new Span("-");
   private final Span mapStatus = new Span("-");
+  private final Span mapCount = new Span("-");
   private final Span mapDuration = new Span("-");
   private final Span revenuePerMap = new Span("-");
   private final Span avgRevenuePerMap = new Span("-");
@@ -61,8 +62,9 @@ public class LogFileView extends Main {
   private final AtomicLong sessionStartMillis = new AtomicLong(0);
   private final AtomicLong mapStartMillis = new AtomicLong(0);
 
-  public LogFileView(LogService logService) {
+  public LogFileView(LogService logService, StatsService statsService) {
     this.logService = logService;
+    this.statsService = statsService;
 
     // Header
     var header = new Paragraph("Log File Analyzer - Real-time Tailing");
@@ -123,8 +125,9 @@ public class LogFileView extends Main {
         statItem("Session duration", VaadinIcon.TIME_BACKWARD, sessionDuration),
         statItem("Revenue per session", VaadinIcon.MONEY, revenuePerSession),
         statItem("Map Status", VaadinIcon.MAP_MARKER, mapStatus),
+        statItem("Map Count", VaadinIcon.MAP_MARKER, mapCount),
         statItem("Map Duration", VaadinIcon.TIME_FORWARD, mapDuration),
-        statItem("Revenue per map", VaadinIcon.COIN_PILES, revenuePerMap),
+        statItem("Revenue for current map", VaadinIcon.COIN_PILES, revenuePerMap),
         statItem("Avg revenue per map", VaadinIcon.TRENDING_UP, avgRevenuePerMap),
         statItem("Avg revenue per hour", VaadinIcon.LINE_BAR_CHART, avgRevenuePerHour)
     );
@@ -208,6 +211,7 @@ public class LogFileView extends Main {
       revenuePerMap.setText("0");
       avgRevenuePerMap.setText("0");
       avgRevenuePerHour.setText("0");
+      mapCount.setText("0");
 
       // Start periodic UI updates (example polling using UI access)
       getUI().ifPresent(ui -> {
@@ -244,15 +248,12 @@ public class LogFileView extends Main {
     if (sessionStartMillis.get() > 0) {
       sessionDuration.setText(formatDuration(Duration.ofMillis(now - sessionStartMillis.get())));
     }
-    if (mapStartMillis.get() > 0) {
-      mapDuration.setText(formatDuration(Duration.ofMillis(now - mapStartMillis.get())));
-    }
 
-    // Demo values; wire these to your computed metrics
-    // e.g., double sessionRevenue = statsService.getSessionRevenue();
-    double sessionRevenue = fakeValue(now, 1200.0);
-    double currentMapRevenue = fakeValue(now, 300.0);
-    double mapsCompleted = Math.max(1, Math.round((now - sessionStartMillis.get()) / 600_000.0)); // every 10 min
+    mapDuration.setText(formatDuration(statsService.timeInActiveMap()));
+
+    Float sessionRevenue = statsService.getSessionRevenue();
+    Float currentMapRevenue = statsService.currentMapRevenue();
+    Float mapsCompleted = statsService.mapsCompleted();
     double avgPerMap = sessionRevenue / mapsCompleted;
     double hours = Math.max(0.01, (now - sessionStartMillis.get()) / 3_600_000.0);
     double avgPerHour = sessionRevenue / hours;
@@ -261,6 +262,7 @@ public class LogFileView extends Main {
     revenuePerMap.setText(formatMoney(currentMapRevenue));
     avgRevenuePerMap.setText(formatMoney(avgPerMap));
     avgRevenuePerHour.setText(formatMoney(avgPerHour));
+    mapCount.setText(formatMoney(mapsCompleted));
   }
 
   private String formatDuration(Duration d) {

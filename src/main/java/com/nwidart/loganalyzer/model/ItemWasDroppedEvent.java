@@ -5,19 +5,19 @@ import org.springframework.context.ApplicationEvent;
 public class ItemWasDroppedEvent extends ApplicationEvent {
 
   private final Item item;
-  private final int countDelta;
+  private final Map map;
 
-  public ItemWasDroppedEvent(Object source, Item item, int countDelta) {
+  public ItemWasDroppedEvent(Object source, Item item, Map map) {
     super(source);
     this.item = item;
-    this.countDelta = countDelta;
+    this.map = map;
   }
 
   public Item getItem() {
     return item;
   }
 
-  public int getCountDelta() {
-    return countDelta;
+  public Map getMap() {
+    return map;
   }
 }

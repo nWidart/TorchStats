@@ -81,6 +81,10 @@ public class Item {
     this.maps = maps;
   }
 
+  public Float getPrice() {
+    return 15.5f;
+  }
+
   @Override
   public final boolean equals(Object o) {
     if (this == o) {

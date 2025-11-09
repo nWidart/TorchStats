@@ -109,14 +109,14 @@ class BagModifyLogProcessorTest {
 
     // Then: repository is updated
     Item updated = itemRepository.findById("5028").orElseThrow();
-    assertThat(updated.getNum()).isEqualTo(617);
+    assertThat(updated.getNum()).isEqualTo(17);
 
     // And an ItemUpdateEvent was published with the correct delta
     List<ItemWasDroppedEvent> events = applicationEvents.stream(ItemWasDroppedEvent.class).toList();
     assertThat(events).hasSize(1);
     ItemWasDroppedEvent event = events.getFirst();
     assertThat(event.getItem().getConfigBaseId()).isEqualTo("5028");
-    assertThat(event.getCountDelta()).isEqualTo(17); // 617 - 600
+    assertThat(event.getItem().getNum()).isEqualTo(17); // 617 - 600
   }
 
   @Test
@@ -140,6 +140,6 @@ class BagModifyLogProcessorTest {
     assertThat(events).hasSize(1);
     ItemWasDroppedEvent event = events.getFirst();
     assertThat(event.getItem().getConfigBaseId()).isEqualTo("5028");
-    assertThat(event.getCountDelta()).isEqualTo(617); // new item, so full count is considered
+    assertThat(event.getItem().getNum()).isEqualTo(617); // new item, so full count is considered
   }
 }

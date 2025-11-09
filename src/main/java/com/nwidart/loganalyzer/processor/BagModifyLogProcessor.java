@@ -46,7 +46,8 @@ public class BagModifyLogProcessor implements LogProcessor {
     var item = this.getOrCreateItem(matcher);
     Integer currentAmount = item.getNum();
     Integer newAmount = Integer.valueOf(matcher.group("num"));
-    item.setNum(newAmount);
+    item.setNum(newAmount - currentAmount);
+//    item.setNum(newAmount);
     var savedItem = this.itemRepository.save(item);
 
     Map activeMap = this.mapRepository.findActiveMap();
@@ -58,7 +59,7 @@ public class BagModifyLogProcessor implements LogProcessor {
     }
 
     // trigger event to update Map and Session statistics
-    this.eventPublisher.publishEvent(new ItemWasDroppedEvent(this, savedItem, newAmount - currentAmount));
+    this.eventPublisher.publishEvent(new ItemWasDroppedEvent(this, savedItem, activeMap));
   }
 
   private Item getOrCreateItem(Matcher matcher) {

@@ -15,9 +15,8 @@ public class ItemUpdateListener {
   @EventListener
   public void onItemUpdate(ItemWasDroppedEvent event) {
     Item item = event.getItem();
-    int delta = event.getCountDelta();
 
-    log.info("Item updated: {} by {}", item.getConfigBaseId(), delta);
+    log.info("Item updated: {}", item.getConfigBaseId());
     // add item to the currently active map
     //
   }

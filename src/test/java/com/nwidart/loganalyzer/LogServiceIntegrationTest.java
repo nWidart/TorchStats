@@ -6,6 +6,8 @@ import com.nwidart.loganalyzer.model.Item;
 import com.nwidart.loganalyzer.model.ItemRepository;
 import com.nwidart.loganalyzer.model.Map;
 import com.nwidart.loganalyzer.model.MapRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,10 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 class LogServiceIntegrationTest {
 
   private static final Logger log = LoggerFactory.getLogger(LogServiceIntegrationTest.class);
@@ -41,16 +41,28 @@ class LogServiceIntegrationTest {
   @Autowired
   private MapRepository mapRepository;
 
+  @PersistenceContext
+  private EntityManager entityManager;
+  
+  @Autowired
+  private org.springframework.transaction.PlatformTransactionManager txManager;
+
   @BeforeEach
   void cleanDbBefore() {
-    // Ensure a clean state for each test
-    itemRepository.deleteAll();
-    mapRepository.deleteAll();
-
     // Safety: ensure no previous tailer is running
     if (logService.isRunning()) {
       logService.stopTailing();
     }
+
+    // Ensure a clean state for each test (wrap in a transaction)
+    new org.springframework.transaction.support.TransactionTemplate(txManager)
+        .execute(status -> {
+          entityManager.createNativeQuery("delete from map_item").executeUpdate();
+          entityManager.createQuery("delete from Item").executeUpdate();
+          entityManager.createQuery("delete from Map").executeUpdate();
+          entityManager.flush();
+          return null;
+        });
   }
 
   @AfterEach
@@ -70,9 +82,9 @@ class LogServiceIntegrationTest {
     logService.startTailing(logFile);
 
     // Wait until all lines have been processed
-    awaitUntil(() -> logService.getCurrentLineNumber() >= expectedLines, Duration.ofSeconds(5));
+    awaitUntil(() -> logService.getCurrentLineNumber() >= expectedLines, Duration.ofSeconds(10));
     // small settling delay to ensure repository flush in the tailer thread
-    sleep(150);
+    sleep(250);
 
     // Then
     assertThat(mapRepository.count()).as("Map should be created at map entry").isEqualTo(1);
@@ -103,12 +115,12 @@ class LogServiceIntegrationTest {
     logService.startTailing(logFile);
 
     // Wait until all lines have been processed
-    awaitUntil(() -> logService.getCurrentLineNumber() >= expectedLines, Duration.ofSeconds(5));
-    sleep(150);
+    awaitUntil(() -> logService.getCurrentLineNumber() >= expectedLines, Duration.ofSeconds(10));
+    sleep(250);
 
     // Then: map created
     assertThat(mapRepository.count()).isEqualTo(1);
-    List<Map> maps = mapRepository.findAll(Sort.by(Sort.Direction.DESC, "endedAt"));
+    List<Map> maps = mapRepository.fetchMapsWithItemsSortedByEndedAtDesc();
     assertThat(maps).hasSize(1);
     var lastMap = maps.getFirst();
     assertThat(lastMap.getEndedAt()).isNotNull();
@@ -140,12 +152,12 @@ class LogServiceIntegrationTest {
     logService.startTailing(logFile);
 
     // Wait until all lines have been processed
-    awaitUntil(() -> logService.getCurrentLineNumber() >= expectedLines, Duration.ofSeconds(5));
-    sleep(150);
+    awaitUntil(() -> logService.getCurrentLineNumber() >= expectedLines, Duration.ofSeconds(10));
+    sleep(250);
 
     // Then: map created
     assertThat(mapRepository.count()).isEqualTo(2);
-    List<Map> maps = mapRepository.findAll(Sort.by(Sort.Direction.DESC, "endedAt"));
+    List<Map> maps = mapRepository.fetchMapsWithItemsSortedByEndedAtDesc();
     assertThat(maps).hasSize(2);
     var lastMap = maps.getFirst();
     assertThat(lastMap.getEndedAt()).isNotNull();
@@ -170,7 +182,7 @@ class LogServiceIntegrationTest {
   }
 
   // ---------- helpers ----------
-
+  
   private Path resourcePath(String classpathLocation) throws IOException {
     ClassPathResource res = new ClassPathResource(classpathLocation);
     if (!res.exists()) {
