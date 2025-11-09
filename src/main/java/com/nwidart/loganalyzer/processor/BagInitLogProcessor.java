@@ -43,8 +43,8 @@ public class BagInitLogProcessor implements LogProcessor {
         matcher.group("pageId"),
         matcher.group("slotId"),
         matcher.group("configBaseId"),
-        Integer.valueOf(matcher.group("num"))
-    );
+        Integer.valueOf(matcher.group("num")),
+        0);
     this.itemRepository.save(item);
   }
 

@@ -8,7 +8,7 @@ public class Bag {
   private List<Item> items = new ArrayList<>();
 
   public void addItem(String pageId, String slotId, String configBaseId, Integer num) {
-    var item = Item.of(pageId, slotId, configBaseId, num);
+    var item = Item.of(pageId, slotId, configBaseId, num, 0);
 
     this.items.add(item);
   }

@@ -23,6 +23,8 @@ public class Item {
   private String slotId;
   @Column(name = "num", nullable = false)
   private Integer num;
+  @Column(name = "total", nullable = false)
+  private Integer total;
 
   @ManyToMany(mappedBy = "items")
   private Set<Map> maps = new LinkedHashSet<>();
@@ -30,15 +32,16 @@ public class Item {
   protected Item() {
   }
 
-  private Item(String pageId, String slotId, String configBaseId, Integer num) {
+  private Item(String pageId, String slotId, String configBaseId, Integer num, Integer total) {
     this.pageId = pageId;
     this.slotId = slotId;
     this.configBaseId = configBaseId;
     this.num = num;
+    this.total = total;
   }
 
-  public static Item of(String pageId, String slotId, String configBaseId, Integer num) {
-    return new Item(pageId, slotId, configBaseId, num);
+  public static Item of(String pageId, String slotId, String configBaseId, Integer num, Integer total) {
+    return new Item(pageId, slotId, configBaseId, num, total);
   }
 
   public String getPageId() {
@@ -107,5 +110,13 @@ public class Item {
   @Override
   public final int hashCode() {
     return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+  }
+
+  public Integer getTotal() {
+    return total;
+  }
+
+  public void setTotal(Integer total) {
+    this.total = total;
   }
 }

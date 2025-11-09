@@ -94,7 +94,7 @@ class BagModifyLogProcessorTest {
   @Test
   void process_updates_existing_item_and_publishes_event_with_delta() {
     // Given an existing item in the repository
-    Item existing = Item.of("102", "11", "5028", 600);
+    Item existing = Item.of("102", "11", "5028", 600, 0);
     itemRepository.save(existing);
 
     String line = "[2025.11.04-19.23.40:548][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 102 SlotId = 11 ConfigBaseId = 5028 Num = 617";

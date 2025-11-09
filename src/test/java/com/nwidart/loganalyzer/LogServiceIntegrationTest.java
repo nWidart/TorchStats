@@ -98,9 +98,9 @@ class LogServiceIntegrationTest {
     assertThat(i261010).isNotNull();
     assertThat(i5555).isNotNull();
 
-    assertThat(i3001.getNum()).isEqualTo(3); // 1 -> 3
-    assertThat(i261010.getNum()).isEqualTo(0); // 1 -> 0
-    assertThat(i5555.getNum()).isEqualTo(10); // created by modify
+    assertThat(i3001.getTotal()).isEqualTo(3); // 1 -> 3
+    assertThat(i261010.getTotal()).isEqualTo(0); // 1 -> 0
+    assertThat(i5555.getTotal()).isEqualTo(10); // created by modify
 
     assertThat(itemRepository.count()).isEqualTo(3);
   }
@@ -135,9 +135,9 @@ class LogServiceIntegrationTest {
     assertThat(i7002).isNotNull();
     assertThat(i8000).isNotNull();
 
-    assertThat(i7001.getNum()).isEqualTo(9);  // 5 -> 8 -> 9
-    assertThat(i7002.getNum()).isEqualTo(0);  // 1 -> 0
-    assertThat(i8000.getNum()).isEqualTo(2);  // created by modify
+    assertThat(i7001.getTotal()).isEqualTo(9);  // 5 -> 8 -> 9
+    assertThat(i7002.getTotal()).isEqualTo(0);  // 1 -> 0
+    assertThat(i8000.getTotal()).isEqualTo(2);  // created by modify
 
     assertThat(itemRepository.count()).isEqualTo(3);
   }
@@ -173,10 +173,10 @@ class LogServiceIntegrationTest {
     assertThat(i7002).isNotNull();
     assertThat(i8000).isNotNull();
 
-    assertThat(i7001.getNum()).isEqualTo(60);  // 5 -> 8 -> 9 -> 50 -> 60
-    assertThat(i7002.getNum()).isEqualTo(1);  // 1 -> 0 -> 1
-    assertThat(i7003.getNum()).isEqualTo(20);  // 1 -> 20
-    assertThat(i8000.getNum()).isEqualTo(10);  // 2 -> 10 (incremented in map2)
+    assertThat(i7001.getTotal()).isEqualTo(60);  // 5 -> 8 -> 9 -> 50 -> 60
+    assertThat(i7002.getTotal()).isEqualTo(1);  // 1 -> 0 -> 1
+    assertThat(i7003.getTotal()).isEqualTo(20);  // 1 -> 20
+    assertThat(i8000.getTotal()).isEqualTo(10);  // 2 -> 10 (incremented in map2)
 
     assertThat(itemRepository.count()).isEqualTo(4);
   }

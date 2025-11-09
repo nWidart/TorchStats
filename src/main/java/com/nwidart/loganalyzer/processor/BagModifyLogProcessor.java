@@ -47,7 +47,7 @@ public class BagModifyLogProcessor implements LogProcessor {
     Integer currentAmount = item.getNum();
     Integer newAmount = Integer.valueOf(matcher.group("num"));
     item.setNum(newAmount - currentAmount);
-//    item.setNum(newAmount);
+    item.setTotal(newAmount);
     var savedItem = this.itemRepository.save(item);
 
     Map activeMap = this.mapRepository.findActiveMap();
@@ -67,7 +67,7 @@ public class BagModifyLogProcessor implements LogProcessor {
     if (item != null) {
       return item;
     }
-    return Item.of(matcher.group("pageId"), matcher.group("slotId"), matcher.group("configBaseId"), 0);
+    return Item.of(matcher.group("pageId"), matcher.group("slotId"), matcher.group("configBaseId"), 0, 0);
   }
 
   @Override
