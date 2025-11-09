@@ -1,5 +1,7 @@
 ### 2025-11-09
 
+- Added scenario runner script `scenario.sh` to orchestrate maps and item drops using `append.sh`. See usage in the script header. Example:
+  - `./scenario.sh -f ./tmp/test.log --maps 2 --drops 3 --itemIds 3001,3002 --sleepAction 1 --sleepMap 2`
 - Added tests for log analyzer processors:
   - `MapEntryLogProcessorTest`: verifies regex pattern matching, order (`15`), and that processing persists a new `Map` via `MapRepository`.
   - `MapExitLogProcessorTest`: verifies regex pattern matching, order (`15`), and that processing a matching line executes without errors.
