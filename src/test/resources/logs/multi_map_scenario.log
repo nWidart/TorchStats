@@ -1,0 +1,16 @@
+[2025.11.05-10.00.00:000][100]GameLog: Display: [Game] BagMgr@:InitBagData PageId = 200 SlotId = 10 ConfigBaseId = 7001 Num = 5
+[2025.11.05-10.00.01:000][100]GameLog: Display: [Game] BagMgr@:InitBagData PageId = 200 SlotId = 11 ConfigBaseId = 7002 Num = 1
+[2025.11.05-10.00.01:000][100]GameLog: Display: [Game] BagMgr@:InitBagData PageId = 200 SlotId = 13 ConfigBaseId = 7003 Num = 1
+[2025.11.05-10.00.02:000][100]GameLog: Display: [Game] PageApplyBase@ _UpdateGameEnd: LastSceneName = World'/Game/Art/Maps/01SD/XZ_YuJinZhiXiBiNanSuo200/XZ_YuJinZhiXiBiNanSuo200.XZ_YuJinZhiXiBiNanSuo200' NextSceneName = World'/Game/Art/Maps/02SD/SomeOtherMap/SomeOtherMap.SomeOtherMap'
+[2025.11.05-10.00.05:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 10 ConfigBaseId = 7001 Num = 8
+[2025.11.05-10.00.06:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 11 ConfigBaseId = 7002 Num = 0
+[2025.11.05-10.00.07:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 12 ConfigBaseId = 8000 Num = 2
+[2025.11.05-10.00.08:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 10 ConfigBaseId = 7001 Num = 9
+[2025.11.05-10.00.10:000][  5]GameLog: Display: [Game] NextSceneName = World'/Game/Art/Maps/01SD/XZ_YuJinZhiXiBiNanSuo200/XZ_YuJinZhiXiBiNanSuo200.XZ_YuJinZhiXiBiNanSuo200'
+[2025.11.05-10.00.11:000][100]GameLog: Display: [Game] PageApplyBase@ _UpdateGameEnd: LastSceneName = World'/Game/Art/Maps/01SD/XZ_YuJinZhiXiBiNanSuo200/XZ_YuJinZhiXiBiNanSuo200.XZ_YuJinZhiXiBiNanSuo200' NextSceneName = World'/Game/Art/Maps/02SD/SomeOtherMap/SomeOtherMap.SomeOtherMap2'
+[2025.11.05-10.00.12:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 10 ConfigBaseId = 7001 Num = 50
+[2025.11.05-10.00.13:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 11 ConfigBaseId = 7002 Num = 1
+[2025.11.05-10.00.14:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 12 ConfigBaseId = 8000 Num = 10
+[2025.11.05-10.00.15:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 10 ConfigBaseId = 7001 Num = 60
+[2025.11.05-10.00.15:000][  5]GameLog: Display: [Game] BagMgr@:Modfy BagItem PageId = 200 SlotId = 13 ConfigBaseId = 7003 Num = 20
+[2025.11.05-10.00.16:000][  5]GameLog: Display: [Game] NextSceneName = World'/Game/Art/Maps/01SD/XZ_YuJinZhiXiBiNanSuo200/XZ_YuJinZhiXiBiNanSuo200.XZ_YuJinZhiXiBiNanSuo200'

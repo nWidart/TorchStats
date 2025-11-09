@@ -130,6 +130,45 @@ class LogServiceIntegrationTest {
     assertThat(itemRepository.count()).isEqualTo(3);
   }
 
+  @Test
+  @DisplayName("multi scenario: Multiple items with multiple maps")
+  void logService_processes_multi_map_scenario_log() throws Exception {
+    Path logFile = resourcePath("logs/multi_map_scenario.log");
+    long expectedLines = countLines(logFile);
+
+    // When
+    logService.startTailing(logFile);
+
+    // Wait until all lines have been processed
+    awaitUntil(() -> logService.getCurrentLineNumber() >= expectedLines, Duration.ofSeconds(5));
+    sleep(150);
+
+    // Then: map created
+    assertThat(mapRepository.count()).isEqualTo(2);
+    List<Map> maps = mapRepository.findAll(Sort.by(Sort.Direction.DESC, "endedAt"));
+    assertThat(maps).hasSize(2);
+    var lastMap = maps.getFirst();
+    assertThat(lastMap.getEndedAt()).isNotNull();
+    assertThat(lastMap.getItems()).hasSize(4);
+
+    // Items and their final counts
+    Item i7001 = itemRepository.findByConfigBaseId("7001");
+    Item i7002 = itemRepository.findByConfigBaseId("7002");
+    Item i7003 = itemRepository.findByConfigBaseId("7003");
+    Item i8000 = itemRepository.findByConfigBaseId("8000");
+
+    assertThat(i7001).isNotNull();
+    assertThat(i7002).isNotNull();
+    assertThat(i8000).isNotNull();
+
+    assertThat(i7001.getNum()).isEqualTo(60);  // 5 -> 8 -> 9 -> 50 -> 60
+    assertThat(i7002.getNum()).isEqualTo(1);  // 1 -> 0 -> 1
+    assertThat(i7003.getNum()).isEqualTo(20);  // 1 -> 20
+    assertThat(i8000.getNum()).isEqualTo(10);  // 2 -> 10 (incremented in map2)
+
+    assertThat(itemRepository.count()).isEqualTo(4);
+  }
+
   // ---------- helpers ----------
 
   private Path resourcePath(String classpathLocation) throws IOException {
