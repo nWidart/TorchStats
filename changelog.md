@@ -30,3 +30,10 @@ Notes:
 - Repository enhancement: moved fetch-join helper into `MapRepository`:
   - Added `MapRepository#fetchMapsWithItemsSortedByEndedAtDesc()` with JPQL `select distinct m from Map m left join fetch m.items order by m.endedAt desc`.
   - Updated `LogServiceIntegrationTest` to use the repository method and removed the private helper.
+
+### 2025-11-10
+
+- CI: Added GitHub Actions workflow `prod-build.yml` to build and export a production JAR.
+  - Uses Temurin JDK 21 via `actions/setup-java@v4` with Maven cache.
+  - Runs `./mvnw -B clean package -Pproduction -DskipTests` to build with the production profile (Vaadin `build-frontend`).
+  - Uploads `target/*.jar` as artifact `torchstats-jar` (retention 7 days).

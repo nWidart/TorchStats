@@ -1,0 +1,31 @@
+name: Build and export production JAR
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Temurin JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Production build (Vaadin frontend + Spring Boot JAR)
+        run: ./mvnw -B clean package -Pproduction -DskipTests
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: torchstats-jar
+          path: target/*.jar
+          if-no-files-found: error
+          retention-days: 7
