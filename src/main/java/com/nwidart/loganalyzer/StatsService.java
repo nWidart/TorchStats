@@ -1,5 +1,6 @@
 package com.nwidart.loganalyzer;
 
+import com.nwidart.fulltable.FullTableService;
 import com.nwidart.loganalyzer.model.Item;
 import com.nwidart.loganalyzer.model.Map;
 import com.nwidart.loganalyzer.model.MapRepository;
@@ -11,9 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class StatsService {
 
+  private final FullTableService fullTableService;
+
   private final MapRepository mapRepository;
 
-  public StatsService(MapRepository mapRepository) {
+  public StatsService(FullTableService fullTableService, MapRepository mapRepository) {
+    this.fullTableService = fullTableService;
     this.mapRepository = mapRepository;
   }
 
@@ -21,7 +25,7 @@ public class StatsService {
   public Float getSessionRevenue() {
     return this.mapRepository.findAll().stream()
         .flatMap(m -> m.getItems().stream())
-        .map(Item::getPrice)
+        .map(this::getPriceForItem)
         .reduce(0f, Float::sum);
   }
 
@@ -31,7 +35,7 @@ public class StatsService {
       return 0f;
     }
     return activeMap.getItems().stream()
-        .map(Item::getPrice)
+        .map(this::getPriceForItem)
         .reduce(0f, Float::sum);
   }
 
@@ -47,5 +51,9 @@ public class StatsService {
     Instant now = Instant.now();
 
     return Duration.between(activeMap.getStartedAt(), now);
+  }
+
+  private Float getPriceForItem(Item item) {
+    return this.fullTableService.getPriceForItem(item);
   }
 }

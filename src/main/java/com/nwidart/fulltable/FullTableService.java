@@ -2,6 +2,7 @@ package com.nwidart.fulltable;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nwidart.loganalyzer.model.Item;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -60,5 +61,16 @@ public class FullTableService implements ApplicationRunner {
 
   public int size() {
     return itemsById.size();
+  }
+
+  public Float getPriceForItem(Item item) {
+    if (item.getConfigBaseId() == null) {
+      return 0f;
+    }
+
+    return findById(item.getConfigBaseId())
+        .map(FullTableItem::price)
+        .map(Double::floatValue)
+        .orElse(0f);
   }
 }
