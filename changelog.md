@@ -37,3 +37,8 @@ Notes:
   - Uses Temurin JDK 21 via `actions/setup-java@v4` with Maven cache.
   - Runs `./mvnw -B clean package -Pproduction -DskipTests` to build with the production profile (Vaadin `build-frontend`).
   - Uploads `target/*.jar` as artifact `torchstats-jar` (retention 7 days).
+
+- Data: Added in-memory loading of `full_table.json` on application startup.
+  - New DTO record `com.nwidart.fulltable.FullTableItem` mapping fields: `from`, `last_time`, `last_update`, `name`, `price`, `type`.
+  - New service `com.nwidart.fulltable.FullTableService` reads the JSON from classpath at startup and exposes `findById`, `all`, and `size`.
+  - Added test `FullTableServiceTest` to verify data is loaded and key `10001` exists with expected name.
