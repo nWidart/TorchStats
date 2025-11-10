@@ -8,14 +8,9 @@ import com.nwidart.loganalyzer.model.Map;
 import com.nwidart.loganalyzer.model.MapRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,10 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest
-class LogServiceIntegrationTest {
+class LogServiceIntegrationTest extends AbstractResourceTest {
 
   private static final Logger log = LoggerFactory.getLogger(LogServiceIntegrationTest.class);
 
@@ -42,9 +38,9 @@ class LogServiceIntegrationTest {
 
   @PersistenceContext
   private EntityManager entityManager;
-  
+
   @Autowired
-  private org.springframework.transaction.PlatformTransactionManager txManager;
+  private PlatformTransactionManager txManager;
 
   @BeforeEach
   void cleanDbBefore() {
@@ -54,7 +50,7 @@ class LogServiceIntegrationTest {
     }
 
     // Ensure a clean state for each test (wrap in a transaction)
-    new org.springframework.transaction.support.TransactionTemplate(txManager)
+    new TransactionTemplate(txManager)
         .execute(status -> {
           entityManager.createNativeQuery("delete from map_item").executeUpdate();
           entityManager.createQuery("delete from Item").executeUpdate();
@@ -178,49 +174,5 @@ class LogServiceIntegrationTest {
     assertThat(i8000.getTotal()).isEqualTo(10);  // 2 -> 10 (incremented in map2)
 
     assertThat(itemRepository.count()).isEqualTo(4);
-  }
-
-  // ---------- helpers ----------
-  
-  private Path resourcePath(String classpathLocation) throws IOException {
-    ClassPathResource res = new ClassPathResource(classpathLocation);
-    if (!res.exists()) {
-      throw new IllegalArgumentException("Test resource not found: " + classpathLocation);
-    }
-    try {
-      URL url = res.getURL();
-      return Path.of(url.toURI());
-    } catch (URISyntaxException e) {
-      throw new IOException("Could not resolve resource URI: " + classpathLocation, e);
-    }
-  }
-
-  private long countLines(Path file) throws IOException {
-    try (var lines = Files.lines(file)) {
-      return lines.count();
-    }
-  }
-
-  private void awaitUntil(BooleanSupplier condition, Duration timeout) throws InterruptedException {
-    long deadline = System.nanoTime() + timeout.toNanos();
-    while (System.nanoTime() < deadline) {
-      if (condition.getAsBoolean()) {
-        return;
-      }
-      sleep(25);
-    }
-    // one last check
-    if (!condition.getAsBoolean()) {
-      throw new AssertionError("Condition not met within timeout " + timeout);
-    }
-  }
-
-  @FunctionalInterface
-  private interface BooleanSupplier {
-    boolean getAsBoolean();
-  }
-
-  private void sleep(long millis) throws InterruptedException {
-    TimeUnit.MILLISECONDS.sleep(millis);
   }
 }
