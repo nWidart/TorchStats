@@ -29,6 +29,7 @@ public class StatsService {
         .reduce(0f, Float::sum);
   }
 
+  @Transactional
   public Float currentMapRevenue() {
     Map activeMap = this.mapRepository.findActiveMap();
     if (activeMap == null) {
