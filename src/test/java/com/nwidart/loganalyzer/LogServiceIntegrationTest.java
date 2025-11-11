@@ -159,19 +159,19 @@ class LogServiceIntegrationTest extends AbstractResourceTest {
     assertThat(lastMap.getItems()).hasSize(4);
 
     // Items and their final counts
-    Item i7001 = itemRepository.findByConfigBaseId("7001");
-    Item i7002 = itemRepository.findByConfigBaseId("7002");
-    Item i7003 = itemRepository.findByConfigBaseId("7003");
-    Item i8000 = itemRepository.findByConfigBaseId("8000");
+    Item i100001 = itemRepository.findByConfigBaseId("100001");
+    Item i10001 = itemRepository.findByConfigBaseId("10001");
+    Item i1001 = itemRepository.findByConfigBaseId("1001");
+    Item i10003 = itemRepository.findByConfigBaseId("10003");
 
-    assertThat(i7001).isNotNull();
-    assertThat(i7002).isNotNull();
-    assertThat(i8000).isNotNull();
+    assertThat(i100001).isNotNull();
+    assertThat(i10001).isNotNull();
+    assertThat(i10003).isNotNull();
 
-    assertThat(i7001.getTotal()).isEqualTo(60);  // 5 -> 8 -> 9 -> 50 -> 60
-    assertThat(i7002.getTotal()).isEqualTo(1);  // 1 -> 0 -> 1
-    assertThat(i7003.getTotal()).isEqualTo(20);  // 1 -> 20
-    assertThat(i8000.getTotal()).isEqualTo(10);  // 2 -> 10 (incremented in map2)
+    assertThat(i100001.getTotal()).isEqualTo(60);  // 5 -> 8 -> 9 -> 50 -> 60
+    assertThat(i10001.getTotal()).isEqualTo(1);  // 1 -> 0 -> 1
+    assertThat(i1001.getTotal()).isEqualTo(20);  // 1 -> 20
+    assertThat(i10003.getTotal()).isEqualTo(10);  // 2 -> 10 (incremented in map2)
 
     assertThat(itemRepository.count()).isEqualTo(4);
   }
