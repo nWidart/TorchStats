@@ -19,6 +19,7 @@ import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,8 @@ public class LogService {
   private final AtomicLong currentLineNumber = new AtomicLong(0);
 
   private volatile Tailer tailer;
+  @Value("${tlitracker.tail-from-end:true}")
+  private boolean tailFromEnd;
 
   public LogService(ApplicationEventPublisher eventPublisher, List<LogProcessor> processors) {
     this.eventPublisher = eventPublisher;
@@ -102,7 +105,7 @@ public class LogService {
         .setTailerListener(listener)
         .setDelayDuration(java.time.Duration.ofMillis(POLL_INTERVAL_MS))
         .setStartThread(false)
-        .setTailFromEnd(false) // Start from beginning
+        .setTailFromEnd(this.tailFromEnd)
         .setReOpen(true) // Handle log rotation
         .get();
 
