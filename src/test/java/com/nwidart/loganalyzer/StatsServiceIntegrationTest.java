@@ -1,16 +1,25 @@
 package com.nwidart.loganalyzer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.when;
 
+import com.nwidart.fulltable.FullTableItem;
+import com.nwidart.fulltable.FullTableService;
+import com.nwidart.loganalyzer.model.Item;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -29,8 +38,16 @@ class StatsServiceIntegrationTest extends AbstractResourceTest {
   @Autowired
   private StatsService statsService;
 
+  @MockitoBean
+  private FullTableService fullTableService;
+
   @Test
   void statServiceGeneratesProperData() throws Exception {
+    mockItemId("100001", 10f);
+    mockItemId("10001", 10f);
+    mockItemId("1001", 10f);
+    mockItemId("10003", 10f);
+
     Path logFile = resourcePath("logs/multi_map_scenario.log");
     long expectedLines = countLines(logFile);
 
@@ -43,7 +60,13 @@ class StatsServiceIntegrationTest extends AbstractResourceTest {
 
     // Then: check the stats service
     assertThat(statsService.mapsCompleted()).isEqualTo(2);
-    assertThat(statsService.getSessionRevenue()).isEqualTo(108.5f);
+    assertThat(statsService.getSessionRevenue()).isEqualTo(710.0f);
+  }
+
+  private void mockItemId(String id, Float price) {
+    when(fullTableService.getPriceForItem(argThat(item ->
+        item != null && id.equals(item.getConfigBaseId())
+    ))).thenReturn(price);
   }
 
   @BeforeEach

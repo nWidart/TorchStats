@@ -1,5 +1,6 @@
 package com.nwidart.loganalyzer.ui;
 
+import com.nwidart.fulltable.FullTableService;
 import com.nwidart.loganalyzer.LogService;
 import com.nwidart.loganalyzer.StatsService;
 import com.vaadin.flow.component.DetachEvent;
@@ -39,6 +40,7 @@ public class LogFileView extends Main {
 
   private final LogService logService;
   private final StatsService statsService;
+  private final FullTableService fullTableService;
   private final LinkedBlockingDeque<Span> logLines = new LinkedBlockingDeque<>(MAX_DISPLAYED_LINES);
 
   private final TextField logFileField;
@@ -62,9 +64,10 @@ public class LogFileView extends Main {
   private final AtomicLong sessionStartMillis = new AtomicLong(0);
   private final AtomicLong mapStartMillis = new AtomicLong(0);
 
-  public LogFileView(LogService logService, StatsService statsService) {
+  public LogFileView(LogService logService, StatsService statsService, FullTableService fullTableService) {
     this.logService = logService;
     this.statsService = statsService;
+    this.fullTableService = fullTableService;
 
     // Header
     var header = new Paragraph("Log File Analyzer - Real-time Tailing");

@@ -23,10 +23,12 @@ public class StatsService {
 
   @Transactional
   public Float getSessionRevenue() {
-    return this.mapRepository.findAll().stream()
+    double total = mapRepository.findAll().stream()
         .flatMap(m -> m.getItems().stream())
-        .map(this::getPriceForItem)
-        .reduce(0f, Float::sum);
+        .mapToDouble(item -> getPriceForItem(item) * item.getNum())
+        .sum();
+
+    return (float) total;
   }
 
   @Transactional
