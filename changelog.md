@@ -42,3 +42,14 @@ Notes:
   - New DTO record `com.nwidart.fulltable.FullTableItem` mapping fields: `from`, `last_time`, `last_update`, `name`, `price`, `type`.
   - New service `com.nwidart.fulltable.FullTableService` reads the JSON from classpath at startup and exposes `findById`, `all`, and `size`.
   - Added test `FullTableServiceTest` to verify data is loaded and key `10001` exists with expected name.
+
+
+### 2025-11-11
+
+- Tests: Added `StatsServiceQuantityTest` to thoroughly validate revenue calculations with item quantities:
+  - `currentMapRevenue_includes_quantity_multiplier`
+  - `sessionRevenue_sums_price_times_quantity_across_all_maps`
+  - `currentMapRevenue_zero_when_no_active_map`
+  - `items_with_zero_quantity_do_not_increase_revenue`
+- Fix: Corrected `StatsService#currentMapRevenue()` to multiply unit price by `item.getNum()` (was summing unit prices only). This aligns it with `getSessionRevenue()` and the domain expectation.
+- Verification: New tests pass, and existing `StatsServiceIntegrationTest` still passes. No changes needed in `FullTableService`.

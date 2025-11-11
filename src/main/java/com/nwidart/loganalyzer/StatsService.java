@@ -37,9 +37,10 @@ public class StatsService {
     if (activeMap == null) {
       return 0f;
     }
-    return activeMap.getItems().stream()
-        .map(this::getPriceForItem)
-        .reduce(0f, Float::sum);
+    double total = activeMap.getItems().stream()
+        .mapToDouble(item -> getPriceForItem(item) * item.getNum())
+        .sum();
+    return (float) total;
   }
 
   public Float mapsCompleted() {
