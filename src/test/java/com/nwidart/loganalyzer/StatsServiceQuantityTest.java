@@ -57,6 +57,40 @@ class StatsServiceQuantityTest {
   }
 
   @Test
+  void currentMapRevenue_does_not_include_older_maps() {
+    // Given 2 maps
+    Item a = Item.of("100", "001", "A", 3, 3);
+    Item b = Item.of("100", "002", "B", 2, 2);
+    em.persist(a);
+    em.persist(b);
+    Map map = Map.newMap();
+    map.addItem(a);
+    map.addItem(b);
+    map.endMap();
+    mapRepository.saveAndFlush(map);
+
+    a.setNum(3);
+    b.setNum(2);
+    em.persist(a);
+    em.persist(b);
+    Map map2 = Map.newMap();
+    map2.addItem(a);
+    map2.addItem(b);
+    mapRepository.saveAndFlush(map2);
+
+    when(fullTableService.getPriceForItem(argThat(i -> i != null && "A".equals(i.getConfigBaseId()))))
+        .thenReturn(10f);
+    when(fullTableService.getPriceForItem(argThat(i -> i != null && "B".equals(i.getConfigBaseId()))))
+        .thenReturn(5f);
+
+    // When
+    Float revenue = statsService.currentMapRevenue();
+
+    // Then
+    assertThat(revenue).isEqualTo(40.0f);
+  }
+
+  @Test
   void sessionRevenue_sums_price_times_quantity_across_all_maps() {
     // Given
     Item a = Item.of("p1", "s1", "A", 1, 1);
