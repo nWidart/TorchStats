@@ -1,11 +1,17 @@
 package com.nwidart.loganalyzer.ui;
 
 import com.nwidart.fulltable.FullTableService;
+import com.nwidart.loganalyzer.event.DropEventBroadcaster;
 import com.nwidart.loganalyzer.LogService;
 import com.nwidart.loganalyzer.StatsService;
+import com.nwidart.loganalyzer.event.DropEventBroadcaster.DropEvent;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Main;
@@ -41,6 +47,7 @@ public class LogFileView extends Main {
   private final LogService logService;
   private final StatsService statsService;
   private final FullTableService fullTableService;
+  private final DropEventBroadcaster dropBroadcaster;
   private final LinkedBlockingDeque<Span> logLines = new LinkedBlockingDeque<>(MAX_DISPLAYED_LINES);
 
   private final TextField logFileField;
@@ -49,6 +56,7 @@ public class LogFileView extends Main {
   private final Span statusLabel;
 
   private Registration listenerRegistration;
+  private Registration dropRegistration;
 
   // --- Statistics UI state ---
   private final Span sessionStatus = new Span("-");
@@ -64,10 +72,15 @@ public class LogFileView extends Main {
   private final AtomicLong sessionStartMillis = new AtomicLong(0);
   private final AtomicLong mapStartMillis = new AtomicLong(0);
 
-  public LogFileView(LogService logService, StatsService statsService, FullTableService fullTableService) {
+  // --- Drop events table ---
+  private final Grid<DropEventBroadcaster.DropEvent> dropGrid = new Grid<>(DropEventBroadcaster.DropEvent.class, false);
+  private final ListDataProvider<DropEventBroadcaster.DropEvent> dropProvider = new ListDataProvider<>(new java.util.ArrayList<>());
+
+  public LogFileView(LogService logService, StatsService statsService, FullTableService fullTableService, DropEventBroadcaster dropBroadcaster) {
     this.logService = logService;
     this.statsService = statsService;
     this.fullTableService = fullTableService;
+    this.dropBroadcaster = dropBroadcaster;
 
     // Header
     var header = new Paragraph("Log File Analyzer - Real-time Tailing");
@@ -97,6 +110,19 @@ public class LogFileView extends Main {
     // Statistics card
     var statsCard = createStatisticsCard();
 
+    // Drop events grid
+    dropGrid.setDataProvider(dropProvider);
+    dropGrid.addColumn(DropEvent::time).setHeader("Time").setAutoWidth(true).setFlexGrow(0);
+    dropGrid.addColumn(DropEventBroadcaster.DropEvent::configBaseId).setHeader("Item ID").setAutoWidth(true);
+    dropGrid.addColumn(DropEventBroadcaster.DropEvent::delta).setHeader("Delta").setWidth("90px").setFlexGrow(0);
+    dropGrid.addColumn(DropEventBroadcaster.DropEvent::total).setHeader("Total in inventory").setWidth("90px").setFlexGrow(0);
+    dropGrid.addColumn(e -> String.format("%.2f", e.price())).setHeader("Unit Price").setWidth("100px").setFlexGrow(0);
+    dropGrid.addColumn(e -> {
+      return String.format("%.2f", e.price() * e.delta());
+    }).setHeader("Total Price").setWidth("100px").setFlexGrow(0);
+    dropGrid.setAllRowsVisible(true);
+    dropGrid.addClassNames(LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
+
     // Layout
     setSizeFull();
     addClassNames(
@@ -107,7 +133,34 @@ public class LogFileView extends Main {
         LumoUtility.Gap.MEDIUM
     );
 
-    add(header, logFileField, buttonLayout, statusLabel, statsCard);
+    add(header, logFileField, buttonLayout, statusLabel, statsCard, new H3("Last item drops"), dropGrid);
+  }
+
+  @Override
+  protected void onAttach(AttachEvent attachEvent) {
+    super.onAttach(attachEvent);
+    // Load backlog
+    var backlog = dropBroadcaster.getBacklog();
+    dropProvider.getItems().clear();
+    dropProvider.getItems().addAll(backlog);
+    dropProvider.refreshAll();
+
+    UI ui = attachEvent.getUI();
+    dropRegistration = dropBroadcaster.register(ev -> {
+      ui.access(() -> {
+        var items = dropProvider.getItems();
+        items.add(ev);
+        // keep only last 200
+        int max = 200;
+        if (items.size() > max) {
+          int remove = items.size() - max;
+          // remove from beginning
+          var it = new java.util.ArrayList<>(items).subList(0, remove);
+          items.removeAll(it);
+        }
+        dropProvider.refreshAll();
+      });
+    });
   }
 
   // --- Statistics UI creation ---
@@ -180,6 +233,10 @@ public class LogFileView extends Main {
     super.onDetach(detachEvent);
     if (logService.isRunning()) {
       logService.stopTailing();
+    }
+    if (dropRegistration != null) {
+      dropRegistration.remove();
+      dropRegistration = null;
     }
   }
 

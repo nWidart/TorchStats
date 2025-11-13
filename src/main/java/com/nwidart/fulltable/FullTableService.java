@@ -73,4 +73,14 @@ public class FullTableService implements ApplicationRunner {
         .map(Double::floatValue)
         .orElse(0f);
   }
+
+  public String getNameForItem(Item item) {
+    if (item.getConfigBaseId() == null) {
+      return "N/A";
+    }
+
+    return findById(item.getConfigBaseId())
+        .map(FullTableItem::name)
+        .orElse("N/A");
+  }
 }

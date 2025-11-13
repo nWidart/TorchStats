@@ -53,3 +53,18 @@ Notes:
   - `items_with_zero_quantity_do_not_increase_revenue`
 - Fix: Corrected `StatsService#currentMapRevenue()` to multiply unit price by `item.getNum()` (was summing unit prices only). This aligns it with `getSessionRevenue()` and the domain expectation.
 - Verification: New tests pass, and existing `StatsServiceIntegrationTest` still passes. No changes needed in `FullTableService`.
+
+### 2025-11-13
+
+- Feature: Real-time UI updates for item drops using Vaadin Push.
+  - Added `DropEventBroadcaster` component to broadcast `ItemWasDroppedEvent` updates to all active UIs and keep a small in-memory backlog for newly opened views.
+  - Enhanced `ItemUpdateListener` to listen for `ItemWasDroppedEvent`, transform it to a lightweight DTO, and broadcast it.
+  - Updated `LogFileView` to display a live-updating table (Grid) of the most recent item drop events. The view subscribes on attach and unsubscribes on detach, using `UI.access()` to safely push updates.
+  - Push is globally enabled via `@Push` on `Application`.
+  - Added unit test `DropEventBroadcasterTest` validating backlog sizing and listener notifications.
+
+Manual verification:
+1. Start the app: `./mvnw spring-boot:run`.
+2. Open http://localhost:8080/log-file.
+3. Click "Start Tailing" to begin tailing your log (ensure the path points to a valid UE log).
+4. Trigger some `BagMgr@:Modfy` lines (use `scenario.sh`/`append.sh` helpers). The "Last item drops" table should update live without refreshing.
