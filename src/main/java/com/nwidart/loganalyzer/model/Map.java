@@ -34,7 +34,11 @@ public class Map {
   @JoinTable(
       name = "map_item",
       joinColumns = @JoinColumn(name = "map_id"),
-      inverseJoinColumns = @JoinColumn(name = "config_base_id")
+      inverseJoinColumns = {
+          @JoinColumn(name = "config_base_id", referencedColumnName = "config_base_id", nullable = false),
+          @JoinColumn(name = "page_id", referencedColumnName = "page_id", nullable = false),
+          @JoinColumn(name = "slot_id", referencedColumnName = "slot_id", nullable = false)
+      }
   )
   private Set<Item> items = new LinkedHashSet<>();
 

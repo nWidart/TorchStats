@@ -2,6 +2,7 @@ package com.nwidart.loganalyzer.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.nwidart.loganalyzer.model.ItemId;
 import com.nwidart.loganalyzer.model.ItemRepository;
 import com.nwidart.loganalyzer.model.LogEntry;
 import java.time.Instant;
@@ -97,7 +98,7 @@ class BagInitLogProcessorTest {
     processor.process(entry, matcher);
 
     // then
-    var found = itemRepository.findByConfigBaseId("3001");
+    var found = itemRepository.findById(ItemId.of("3001", "100", "1"));
     assertThat(found).isNotNull();
     assertThat(found.getNum()).isEqualTo(1);
   }

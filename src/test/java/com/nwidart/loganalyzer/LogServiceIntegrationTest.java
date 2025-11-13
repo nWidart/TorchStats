@@ -3,6 +3,7 @@ package com.nwidart.loganalyzer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.nwidart.loganalyzer.model.Item;
+import com.nwidart.loganalyzer.model.ItemId;
 import com.nwidart.loganalyzer.model.ItemRepository;
 import com.nwidart.loganalyzer.model.Map;
 import com.nwidart.loganalyzer.model.MapRepository;
@@ -85,9 +86,9 @@ class LogServiceIntegrationTest extends AbstractResourceTest {
     assertThat(mapRepository.count()).as("Map should be created at map entry").isEqualTo(1);
 
     // Items created or updated
-    Item i3001 = itemRepository.findByConfigBaseId("3001");
-    Item i261010 = itemRepository.findByConfigBaseId("261010");
-    Item i5555 = itemRepository.findByConfigBaseId("5555");
+    Item i3001 = itemRepository.findById(ItemId.of("3001", "100", "1"));
+    Item i261010 = itemRepository.findById(ItemId.of("261010", "100", "5"));
+    Item i5555 = itemRepository.findById(ItemId.of("5555", "100", "9"));
 
     assertThat(i3001).isNotNull();
     assertThat(i261010).isNotNull();
@@ -122,9 +123,9 @@ class LogServiceIntegrationTest extends AbstractResourceTest {
     assertThat(lastMap.getItems()).hasSize(3);
 
     // Items and their final counts
-    Item i7001 = itemRepository.findByConfigBaseId("7001");
-    Item i7002 = itemRepository.findByConfigBaseId("7002");
-    Item i8000 = itemRepository.findByConfigBaseId("8000");
+    Item i7001 = itemRepository.findById(ItemId.of("7001", "200", "10"));
+    Item i7002 = itemRepository.findById(ItemId.of("7002", "200", "11"));
+    Item i8000 = itemRepository.findById(ItemId.of("8000", "200", "12"));
 
     assertThat(i7001).isNotNull();
     assertThat(i7002).isNotNull();
@@ -159,10 +160,10 @@ class LogServiceIntegrationTest extends AbstractResourceTest {
     assertThat(lastMap.getItems()).hasSize(4);
 
     // Items and their final counts
-    Item i100001 = itemRepository.findByConfigBaseId("100001");
-    Item i10001 = itemRepository.findByConfigBaseId("10001");
-    Item i1001 = itemRepository.findByConfigBaseId("1001");
-    Item i10003 = itemRepository.findByConfigBaseId("10003");
+    Item i100001 = itemRepository.findById(ItemId.of("100001", "200", "10"));
+    Item i10001 = itemRepository.findById(ItemId.of("10001", "200", "11"));
+    Item i1001 = itemRepository.findById(ItemId.of("1001", "200", "13"));
+    Item i10003 = itemRepository.findById(ItemId.of("10003", "200", "12"));
 
     assertThat(i100001).isNotNull();
     assertThat(i10001).isNotNull();

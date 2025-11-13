@@ -1,8 +1,8 @@
 package com.nwidart.loganalyzer.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.util.LinkedHashSet;
@@ -14,13 +14,8 @@ import org.hibernate.proxy.HibernateProxy;
 @Table(name = "item")
 public class Item {
 
-  @Id
-  @Column(name = "config_base_id")
-  private String configBaseId;
-  @Column(name = "page_id", nullable = false)
-  private String pageId;
-  @Column(name = "slot_id", nullable = false)
-  private String slotId;
+  @EmbeddedId
+  private ItemId id;
   @Column(name = "num", nullable = false)
   private Integer num;
   @Column(name = "total", nullable = false)
@@ -33,9 +28,7 @@ public class Item {
   }
 
   private Item(String pageId, String slotId, String configBaseId, Integer num, Integer total) {
-    this.pageId = pageId;
-    this.slotId = slotId;
-    this.configBaseId = configBaseId;
+    this.id = new ItemId(configBaseId, pageId, slotId);
     this.num = num;
     this.total = total;
   }
@@ -44,28 +37,16 @@ public class Item {
     return new Item(pageId, slotId, configBaseId, num, total);
   }
 
-  public String getPageId() {
-    return pageId;
+  public ItemId getId() {
+    return id;
   }
 
-  public void setPageId(String pageId) {
-    this.pageId = pageId;
-  }
-
-  public String getSlotId() {
-    return slotId;
-  }
-
-  public void setSlotId(String slotId) {
-    this.slotId = slotId;
+  public void setId(ItemId id) {
+    this.id = id;
   }
 
   public String getConfigBaseId() {
-    return configBaseId;
-  }
-
-  public void setConfigBaseId(String configBaseId) {
-    this.configBaseId = configBaseId;
+    return id != null ? id.getConfigBaseId() : null;
   }
 
   public Integer getNum() {
@@ -84,10 +65,6 @@ public class Item {
     this.maps = maps;
   }
 
-  public Float getPrice() {
-    return 15.5f;
-  }
-
   @Override
   public final boolean equals(Object o) {
     if (this == o) {
@@ -104,7 +81,7 @@ public class Item {
       return false;
     }
     Item item = (Item) o;
-    return getConfigBaseId() != null && Objects.equals(getConfigBaseId(), item.getConfigBaseId());
+    return getId() != null && Objects.equals(getId(), item.getId());
   }
 
   @Override

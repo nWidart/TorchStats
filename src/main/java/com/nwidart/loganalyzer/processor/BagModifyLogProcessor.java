@@ -1,6 +1,7 @@
 package com.nwidart.loganalyzer.processor;
 
 import com.nwidart.loganalyzer.model.Item;
+import com.nwidart.loganalyzer.model.ItemId;
 import com.nwidart.loganalyzer.model.ItemRepository;
 import com.nwidart.loganalyzer.model.ItemWasDroppedEvent;
 import com.nwidart.loganalyzer.model.LogEntry;
@@ -63,7 +64,8 @@ public class BagModifyLogProcessor implements LogProcessor {
   }
 
   private Item getOrCreateItem(Matcher matcher) {
-    var item = this.itemRepository.findByConfigBaseId(matcher.group("configBaseId"));
+    var id = new ItemId(matcher.group("configBaseId"), matcher.group("pageId"), matcher.group("slotId"));
+    var item = this.itemRepository.findById(id);
     if (item != null) {
       return item;
     }
